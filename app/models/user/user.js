@@ -15,19 +15,6 @@ var UserSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    phone: {
-      type: String,
-      require: true,
-      match: /^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/,
-      unique: true,
-    },
-    gender: {
-      type: String,
-    },
-    address: {
-      type: String,
-      require: true,
-    },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );

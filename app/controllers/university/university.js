@@ -1,6 +1,7 @@
 const UniversityModel = require("../../models/university/university");
 
 const getAllUniversity = (req, res) => {
+  console.log("all university is called");
   let cond = {};
   if (req.query.type) {
     cond = {
@@ -8,9 +9,11 @@ const getAllUniversity = (req, res) => {
     };
   }
   UniversityModel.find(cond)
+    .limit(req.query.limit || 10)
+    .skip(req.query.skip || 0)
     .then((universityData) => {
       if (universityData.length > 0) res.status(200).send(universityData);
-      else res.status(404).send("universityData Not Found");
+      else res.status(204).send("universityData Not Found");
     })
     .catch((err) => {
       res.status(500).send({

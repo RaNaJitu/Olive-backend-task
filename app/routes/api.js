@@ -17,7 +17,11 @@ router.delete("/user/:id", validateToken, Controller.userController.deleteUser);
 // ===== End User the routes =====
 
 // ===== Start University the routes =====
-router.get("/university", Controller.universityController.getAllUniversity);
+router.get(
+  "/university",
+  validateToken,
+  Controller.universityController.getAllUniversity
+);
 // ===== End University the routes =====
 
 // ===== Start Wishlist the routes =====

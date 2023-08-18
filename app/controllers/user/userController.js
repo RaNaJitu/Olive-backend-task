@@ -7,10 +7,11 @@ const getAllUsers = (req, res) => {
   userModel
     .find()
     .then((user) => {
-      res.send(user);
+      if (user === null) return res.status(204).send("Data not found");
+      return res.send(user);
     })
     .catch((err) => {
-      res.status(500).send({
+      return res.status(500).send({
         message:
           err.message || "Some error is occurred while creating the user",
       });
@@ -39,39 +40,38 @@ const getUserById = (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  if (Object.keys(req.body).length === 0) {
-    res.status(400).send({ message: "Content can not be empty" });
-    return;
+  const { email, password, name } = req.body;
+  if (email == null || email == "" || password == null || password == "") {
+    res.status(400);
+    return res.status(400).send("email/password can not be empty");
   }
 
   let userAvailable;
-  if (req.body.email) {
+  if (email) {
     userAvailable = await userModel.findOne({ email: req.body.email });
   }
-  console.log("userAvailable", userAvailable);
+  // console.log("userAvailable", userAvailable);
   if (userAvailable) {
-    res.status(400);
-    throw new Error("User already registered!");
+    return res.status(400).send("User already registered!");
   }
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
   console.log("Hashed Password: ", hashedPassword);
-
+  console.log("name=====>", name);
   const userData = new userModel({
-    name: req.body.name,
-    email: req.body.email,
+    name: name,
+    email: email,
     password: hashedPassword,
-    phone: req.body.phone,
-    gender: req.body.gender,
-    address: req.body.address,
   });
 
   userData
     .save(userData)
     .then((data) => {
-      res.send(data);
+      console.log("data ===>", data);
+      return res.send(data);
     })
     .catch((err) => {
-      res.status(500).send({
+      console.log("err====>", err);
+      return res.status(500).send({
         message:
           err.message || "Some error is occurred while creating the user",
       });
@@ -83,8 +83,7 @@ const deleteUser = (req, res) => {
   console.log("id====>", id);
   console.log("USER DETAILS", req.user);
   if (req.user.role !== 1) {
-    res.status(200).send({ message: "You are not authorized people" });
-    return;
+    return res.status(200).send({ message: "You are not authorized people" });
   }
   userModel
     .findByIdAndDelete(id)
@@ -98,7 +97,7 @@ const deleteUser = (req, res) => {
       }
     })
     .catch((err) => {
-      res.status(500).send({
+      return res.status(500).send({
         message: err.message || "Some error is occurred while DELETE the user",
       });
     });
